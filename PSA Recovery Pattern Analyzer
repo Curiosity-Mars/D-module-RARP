@@ -1,0 +1,68 @@
+# psa_dmodule_analysis.py
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.interpolate import UnivariateSpline
+from scipy.signal import argrelextrema
+
+def analyze_psa_dmodule(df, index=0, smooth_param=0.5):
+    """
+    Perform D-module-based analysis of PSA dynamics for a selected patient.
+
+    Parameters:
+        df (pd.DataFrame): DataFrame with longitudinal PSA columns named "PSA POM1", "PSA POM2", etc.
+        index (int): Row index of the patient to analyze.
+        smooth_param (float): Smoothing parameter for spline fitting.
+
+    Returns:
+        dict: Contains time points, smoothed PSA values, a(t), and inflection points.
+    """
+    # Extract columns representing PSA values by postoperative month (POM)
+    pom_cols = [col for col in df.columns if "PSA POM" in col]
+    t = np.array([int(col.replace("PSA POM", "")) for col in pom_cols])
+
+    # Get PSA time series for the selected patient
+    Y = pd.to_numeric(df.iloc[index][pom_cols], errors='coerce').astype(float)
+    mask = ~np.isnan(Y)
+    t_valid = t[mask]
+    Y_valid = Y[mask]
+
+    # Fit smoothing spline to observed PSA data
+    spline = UnivariateSpline(t_valid, Y_valid, s=smooth_param)
+    Y_smooth = spline(t)
+    dYdt = spline.derivative()(t)
+    a_t = -dYdt / Y_smooth
+
+    # Identify structural inflection points (local maxima of second derivative)
+    second_deriv = spline.derivative(n=2)(t)
+    inflection_idx = argrelextrema(second_deriv, np.greater)[0]
+    inflection_points = t[inflection_idx]
+
+    # Plot results
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    axes[0].plot(t, Y_smooth, label='Smoothed PSA(t)', color='blue')
+    axes[0].scatter(t_valid, Y_valid, color='black', label='Observed')
+    axes[0].set_xlabel("Postoperative Months (POM)")
+    axes[0].set_ylabel("PSA")
+    axes[0].set_title("PSA Trajectory (Smoothed)")
+    axes[0].legend()
+
+    axes[1].plot(t, a_t, label="a(t) = -dY/dt / Y", color='orange')
+    for pt in inflection_points:
+        axes[1].axvline(x=pt, color='red', linestyle='--', alpha=0.6)
+    axes[1].set_xlabel("Postoperative Months (POM)")
+    axes[1].set_ylabel("Resilience Coefficient a(t)")
+    axes[1].set_title("D-Module Derived a(t)")
+    axes[1].legend()
+
+    plt.tight_layout()
+    plt.show()
+
+    return {
+        "POM": t.tolist(),
+        "PSA_smoothed": Y_smooth.tolist(),
+        "a_t": a_t.tolist(),
+        "inflection_points": inflection_points.tolist()
+    }
