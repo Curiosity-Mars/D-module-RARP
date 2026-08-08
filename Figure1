@@ -1,0 +1,1044 @@
+IMPLEMENTATION AUDIT RECORD
+Initial D-module PSA Code
+Line-by-line reproduction of the Figure 1 initial implementation
+Repository: Curiosity-Mars/D-module-RARP
+Source notebook: Figure1_initial_dmodule_code_line_audit.ipynb (English repository record)
+Document language: English
+Prepared: 9 August 2026
+Record status: Converted from the executed notebook; analytical code unchanged
+
+Purpose and audit boundary
+This document preserves the executed notebook as an English-language technical record for the D-module-RARP repository. The conversion reorganizes the material for Word, but it does not rerun, optimize, or modify the analysis.
+•	Replay only the implementation states present in the initial PSA code.
+•	Preserve the original PSA-column selection and source-column ordering.
+•	Preserve numeric conversion, natural-log conversion, adjacent-column differencing, and Gaussian filtering with sigma = 1 and mode = 'nearest'.
+•	Audit both first_rise_month interpretations and the three-feature and five-feature states.
+•	Compare the installed KMeans default with n_init = 10, the historical default in older scikit-learn releases.
+•	Do not add eligibility filtering, interpolation, standardization, POM-normalized derivatives, new features, or alternative clustering methods.
+Execution instructions
+1.	Open the notebook in Google Colab.
+2.	Select Runtime > Run all.
+3.	When the upload widget appears, select the historical input file PSA_20250404.csv. A browser-generated collision suffix such as '(3)' is acceptable because the uploaded bytes and SHA-256 hash define the audited input.
+4.	Review the outputs saved under /content/drive/MyDrive/Dmodule_PSA_initial_code_line_audit.
+Input provenance and execution record
+Field	Recorded value
+Expected historical input	PSA_20250404.csv
+Actual uploaded filename	PSA_20250404.csv
+Input SHA-256	750b04b1542d7dfd22ef3219c2e0331b5ef988cc6dbeeb85f49d39d1a13d944c
+Input rows	1,455
+Patient ID in source	No
+Audit identifier	Audit_Row_ID; sequential row number used only for output traceability
+Selected PSA columns	17; POM 1, 3, 6, 9, 12, 15, 18, 24, 30, 36, 48, 60, 72, 84, 96, 108, and 120
+Literal first_rise_month line	Failed, as expected, because the DataFrame columns use string labels
+Audited implementation states
+Order	Feature state	Columns	Provenance
+1	three_features_column_position	max_a, mean_a, first_rise_month	Minimal executable interpretation of the first rise line; column position used.
+2	three_features_actual_pom	max_a, mean_a, first_rise_month	Later overwritten definition; actual POM label used.
+3	five_features_actual_pom	max_a, mean_a, first_rise_month, t_star, psa_peak_month	Feature object present after t_star and psa_peak_month were added.
+Principal K-means findings
+The reference values were recorded only; no implementation state was selected or ranked by agreement. The table below shows K = 2 and K = 3, the values directly compared with the reference silhouette scores and K = 3 cluster counts.
+Feature state	KMeans mode	K=2 silhouette	K=2 sizes	K=3 silhouette	K=3 sizes
+three_features_column_position	literal_installed_default	0.937251	450|1005	0.915222	78|372|1005
+three_features_column_position	historical_default_n_init_10	0.937251	450|1005	0.915222	78|372|1005
+three_features_actual_pom	literal_installed_default	0.922580	450|1005	0.947916	78|372|1005
+three_features_actual_pom	historical_default_n_init_10	0.922580	450|1005	0.943131	41|409|1005
+five_features_actual_pom	literal_installed_default	0.653662	271|1184	0.602732	230|230|995
+five_features_actual_pom	historical_default_n_init_10	0.660975	250|1205	0.602732	230|230|995
+Saved audit artifacts
+Artifact	Contents
+00_environment.json	Software versions, installed KMeans default, input name, SHA-256, and output path.
+01_input_patient_order.csv	Source row order and trace-only audit identifier.
+02_psa_column_order_audit.csv	Selected PSA columns and source positions.
+03_psa_numeric_conversion_audit.csv	Numeric conversion and value-type counts.
+04_gaussian_nan_propagation_by_patient.csv	Finite and missing values before and after Gaussian filtering.
+05_first_rise_literal_result.csv	Literal first-rise result when executable; otherwise the error is recorded separately.
+06_features_3_column_position.csv	Three-feature state using column position.
+07_features_3_actual_pom.csv	Three-feature state using the actual POM label.
+08_features_5_after_additions.csv	Five-feature state after t_star and psa_peak_month.
+09_feature_state_summary.csv	Per-feature missingness and descriptive summaries.
+10_feature_state_execution_order.csv	Feature-state chronology and provenance.
+11_cluster_metrics_all_audited_states.csv	K = 2-6 silhouette scores and cluster sizes for every audited state and KMeans mode.
+12_imputation_audit.csv	Median-imputation values used before clustering.
+13_line_by_line_audit.csv	Dimensions, missingness, status, and notes after each code stage.
+14_literal_execution_errors.csv	Captured exception from the literal first_rise_month statement.
+15_audit_summary.txt	Human-readable final audit record.
+assignments_*.csv / trajectory_*.csv / trajectory_*.png	K = 3 assignments and trajectory summaries for each audited feature state and KMeans mode.
+ 
+Execution figures
+The six embedded notebook figures are reproduced below. Raw KMeans labels are retained and were not reordered to resemble manuscript clusters.
+ 
+Figure 1. Mean PSA trajectories: three_features_column_position / literal_installed_default.
+ 
+Figure 2. Mean PSA trajectories: three_features_column_position / historical_default_n_init_10. 
+ 
+Figure 3. Mean PSA trajectories: three_features_actual_pom / literal_installed_default.
+ 
+Figure 4. Mean PSA trajectories: three_features_actual_pom / historical_default_n_init_10. 
+ 
+Figure 5. Mean PSA trajectories: five_features_actual_pom / literal_installed_default.
+ 
+Figure 6. Mean PSA trajectories: five_features_actual_pom / historical_default_n_init_10.
+ 
+Appendix A. Complete executed summary
+The material console output is preserved verbatim below. Repeated library deprecation warnings were omitted from this Word rendering; the notebook itself retains those warnings.
+====================================================================================================
+AUDIT COMPLETED
+====================================================================================================
+INITIAL D-MODULE PSA CODE: LINE-BY-LINE IMPLEMENTATION AUDIT
+ 
+Expected historical input: PSA_20250404.csv
+Actual uploaded filename: PSA_20250404.csv
+Input SHA-256: 750b04b1542d7dfd22ef3219c2e0331b5ef988cc6dbeeb85f49d39d1a13d944c
+Input rows: 1455
+Source contained Patient_ID: False
+Audit identifier column: Audit_Row_ID
+Audit identifier provenance: generated sequential row number; not an analysis feature
+Unique audit identifiers: 1455
+Selected PSA columns: 17
+PSA column order: PSA POM1 | PSA POM3 | PSA POM6 | PSA POM9 | PSA POM12 | PSA POM15 | PSA POM18 | PSA POM24 | PSA POM30 | PSA POM36 | PSA POM48 | PSA POM60 | PSA POM72 | PSA POM84 | PSA POM96 | PSA POM108 | PSA POM120
+ 
+No eligibility filter was applied.
+No interpolation was applied.
+No standardization was applied.
+No actual-POM normalization of a(t) was applied.
+No new feature or clustering method was introduced.
+ 
+Literal first_rise_month line succeeded: False
+ 
+Audited executable feature states:
+  1. three_features_column_position (minimal execution patch)
+  2. three_features_actual_pom (later overwritten definition)
+  3. five_features_actual_pom (after t_star and psa_peak_month additions)
+ 
+KMeans modes:
+  1. literal constructor under the installed scikit-learn default
+  2. n_init=10 compatibility replay of the historical default
+ 
+Reference values were recorded only; no state was selected or ranked by agreement.
+Reference K=3 counts (sorted): 78|372|984
+Reference K=2 silhouette: 0.654
+Reference K=3 silhouette: 0.641
+ 
+Primary audit files:
+  02_psa_column_order_audit.csv
+  04_gaussian_nan_propagation_by_patient.csv
+  09_feature_state_summary.csv
+  10_feature_state_execution_order.csv
+  11_cluster_metrics_all_audited_states.csv
+  13_line_by_line_audit.csv
+  14_literal_execution_errors.csv
+ 
+Cluster metrics (descriptive display only):
+                 feature_state                  kmeans_mode  k  silhouette  cluster_sizes_sorted  silhouette_difference_from_reference  absolute_count_difference_from_reference
+three_features_column_position    literal_installed_default  2    0.937251              450|1005                              0.283251                                       NaN
+three_features_column_position    literal_installed_default  3    0.915222           78|372|1005                              0.274222                                      21.0
+three_features_column_position    literal_installed_default  4    0.897835         30|78|372|975                                   NaN                                       NaN
+three_features_column_position    literal_installed_default  5    0.886895      23|30|55|372|975                                   NaN                                       NaN
+three_features_column_position    literal_installed_default  6    0.802391   23|30|55|64|308|975                                   NaN                                       NaN
+three_features_column_position historical_default_n_init_10  2    0.937251              450|1005                              0.283251                                       NaN
+three_features_column_position historical_default_n_init_10  3    0.915222           78|372|1005                              0.274222                                      21.0
+three_features_column_position historical_default_n_init_10  4    0.897155        41|82|327|1005                                   NaN                                       NaN
+three_features_column_position historical_default_n_init_10  5    0.879973      30|41|82|327|975                                   NaN                                       NaN
+three_features_column_position historical_default_n_init_10  6    0.866872   23|30|45|55|327|975                                   NaN                                       NaN
+     three_features_actual_pom    literal_installed_default  2    0.922580              450|1005                              0.268580                                       NaN
+     three_features_actual_pom    literal_installed_default  3    0.947916           78|372|1005                              0.306916                                      21.0
+     three_features_actual_pom    literal_installed_default  4    0.952033        23|55|372|1005                                   NaN                                       NaN
+     three_features_actual_pom    literal_installed_default  5    0.952602      5|36|37|372|1005                                   NaN                                       NaN
+     three_features_actual_pom    literal_installed_default  6    0.959701   5|18|18|37|372|1005                                   NaN                                       NaN
+     three_features_actual_pom historical_default_n_init_10  2    0.922580              450|1005                              0.268580                                       NaN
+     three_features_actual_pom historical_default_n_init_10  3    0.943131           41|409|1005                              0.302131                                      95.0
+     three_features_actual_pom historical_default_n_init_10  4    0.952968         5|73|372|1005                                   NaN                                       NaN
+     three_features_actual_pom historical_default_n_init_10  5    0.952602      5|36|37|372|1005                                   NaN                                       NaN
+     three_features_actual_pom historical_default_n_init_10  6    0.955433   5|36|37|45|327|1005                                   NaN                                       NaN
+      five_features_actual_pom    literal_installed_default  2    0.653662              271|1184                             -0.000338                                       NaN
+      five_features_actual_pom    literal_installed_default  3    0.602732           230|230|995                             -0.038268                                     305.0
+      five_features_actual_pom    literal_installed_default  4    0.620855        94|223|228|910                                   NaN                                       NaN
+      five_features_actual_pom    literal_installed_default  5    0.619100    91|105|184|201|874                                   NaN                                       NaN
+      five_features_actual_pom    literal_installed_default  6    0.639765  60|74|77|164|206|874                                   NaN                                       NaN
+      five_features_actual_pom historical_default_n_init_10  2    0.660975              250|1205                              0.006975                                       NaN
+      five_features_actual_pom historical_default_n_init_10  3    0.602732           230|230|995                             -0.038268                                     305.0
+      five_features_actual_pom historical_default_n_init_10  4    0.626811       146|210|220|879                                   NaN                                       NaN
+      five_features_actual_pom historical_default_n_init_10  5    0.634014    15|137|207|221|875                                   NaN                                       NaN
+      five_features_actual_pom historical_default_n_init_10  6    0.620729 14|85|139|180|222|815                                   NaN                                       NaN
+ 
+Saved to:
+/content/drive/MyDrive/Dmodule_PSA_initial_code_line_audit
+Appendix B. Complete notebook source
+All code cells are reproduced in notebook order. The original analytical statements, variable names, comments, paths, and output filenames are unchanged.
+Markdown cell 0
+Run the notebook in Google Colab by selecting Runtime > Run all. When the upload dialog appears, select PSA_20250404.csv, the file used for the initial draft. Because the CSV contains no patient-ID column, a sequential Audit_Row_ID is added only for output traceability; it is not used as an analytical feature or by K-means. A collision-renamed upload such as PSA_20250404 (3).csv is acceptable because the filename and SHA-256 hash are recorded.
+Output directory: /content/drive/MyDrive/Dmodule_PSA_initial_code_line_audit
+No additional exclusion, interpolation, standardization, new feature, or alternative clustering procedure is introduced.
+Code cell 1
+"""
+Initial-code implementation audit for the D-module-inspired PSA analysis.
+ 
+Google Colab / Python
+ 
+Purpose
+-------
+This program does not search for a better clustering method and does not tune
+the analysis toward the published cluster sizes or silhouette scores. It
+replays only implementation states that are present in the initial code:
+ 
+1. Original PSA-column selection and ordering.
+2. Numeric conversion, natural-log conversion, adjacent-column difference,
+   and Gaussian filtering with sigma=1 and mode='nearest'.
+3. The first first_rise_month statement exactly as written (expected to fail
+   when a_t has string column labels).
+4. The smallest executable interpretation of that statement: column position.
+5. The later overwritten definition: actual POM label.
+6. The three-feature state used before t_star and psa_peak_month were added.
+7. The five-feature state present after those two columns were added.
+8. KMeans exactly as written under the installed scikit-learn default and with
+   n_init=10, the historical default used by older scikit-learn releases.
+ 
+No eligibility filter, interpolation, standardization, POM-normalized
+derivative, additional features, or alternative clustering method is used.
+"""
+Code cell 2
+# ============================================================
+# 0. IMPORTS
+# ============================================================
+ 
+import hashlib
+import json
+import platform
+import re
+import traceback
+import warnings
+from pathlib import Path
+ 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import scipy
+import sklearn
+from scipy.ndimage import gaussian_filter1d
+from sklearn.cluster import KMeans
+from sklearn.impute import SimpleImputer
+from sklearn.metrics import silhouette_score
+ 
+try:
+    from google.colab import drive, files
+except ImportError:
+    drive = None
+    files = None
+Code cell 3
+# ============================================================
+# 1. SETTINGS
+# ============================================================
+ 
+# The execution log identifies this as the file uploaded to the initial code.
+# Colab may rename a repeated upload to "PSA_20250404 (3).csv"; the uploaded
+# bytes, rather than the collision suffix, define the audited input.
+EXPECTED_SOURCE_BASENAME = "PSA_20250404.csv"
+INPUT_CSV = None
+ 
+OUTPUT_DIR = Path(
+    "/content/drive/MyDrive/Dmodule_PSA_initial_code_line_audit"
+)
+ 
+# The historical PSA_20250404.csv has no patient-ID column. A sequential audit
+# row identifier is added only to trace outputs; it is never used as a feature.
+PATIENT_ID_COL = "Audit_Row_ID"
+ 
+# These values are reference values only. They are never used to select a
+# condition, optimize a score, or change the analysis.
+REFERENCE_CLUSTER_COUNTS_SORTED = np.array([78, 372, 984])
+REFERENCE_SILHOUETTE_K2 = 0.654
+REFERENCE_SILHOUETTE_K3 = 0.641
+ 
+GAUSSIAN_SIGMA = 1.0
+GAUSSIAN_MODE = "nearest"
+RANDOM_STATE = 42
+ 
+warnings.filterwarnings("default")
+Code cell 4
+# ============================================================
+# 2. MOUNT DRIVE, UPLOAD THE HISTORICAL INPUT, AND CREATE OUTPUT DIRECTORY
+# ============================================================
+ 
+if drive is not None:
+    drive.mount("/content/drive")
+ 
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+ 
+# Replay the initial code's browser-upload input route. Upload
+# PSA_20250404.csv when the widget appears. A browser/session collision suffix
+# such as " (3)" is acceptable and is recorded in the audit.
+if files is not None:
+    uploaded = files.upload()
+    if not uploaded:
+        raise RuntimeError("No CSV was uploaded.")
+    uploaded_filename = next(iter(uploaded))
+    INPUT_CSV = Path(uploaded_filename)
+else:
+    # Local fallback for non-Colab syntax/testing only.
+    INPUT_CSV = Path(EXPECTED_SOURCE_BASENAME)
+ 
+if not INPUT_CSV.exists():
+    raise FileNotFoundError(f"Uploaded input CSV was not found:\n{INPUT_CSV}")
+ 
+with open(INPUT_CSV, "rb") as input_file:
+    INPUT_SHA256 = hashlib.sha256(input_file.read()).hexdigest()
+Code cell 5
+# ============================================================
+# 3. AUDIT HELPERS
+# ============================================================
+ 
+audit_rows = []
+error_rows = []
+ 
+ 
+def numeric_array(obj):
+    """Return a float array for numeric audit summaries."""
+    if isinstance(obj, pd.DataFrame):
+        return obj.apply(pd.to_numeric, errors="coerce").to_numpy(dtype=float)
+    if isinstance(obj, pd.Series):
+        return pd.to_numeric(obj, errors="coerce").to_numpy(dtype=float)
+    return np.asarray(obj, dtype=float)
+ 
+ 
+def record_stage(stage_number, stage_name, obj=None, note="", status="ok"):
+    """Record dimensions and missingness immediately after a code stage."""
+    row = {
+        "stage_number": stage_number,
+        "stage_name": stage_name,
+        "status": status,
+        "object_type": type(obj).__name__ if obj is not None else "",
+        "rows": np.nan,
+        "columns": np.nan,
+        "finite_values": np.nan,
+        "nan_values": np.nan,
+        "positive_infinity_values": np.nan,
+        "negative_infinity_values": np.nan,
+        "all_nan_rows": np.nan,
+        "column_names": "",
+        "note": note,
+    }
+ 
+    if obj is not None:
+        if isinstance(obj, pd.DataFrame):
+            row["rows"], row["columns"] = obj.shape
+            row["column_names"] = "|".join(map(str, obj.columns))
+        elif isinstance(obj, pd.Series):
+            row["rows"] = len(obj)
+            row["columns"] = 1
+            row["column_names"] = str(obj.name)
+        else:
+            arr0 = np.asarray(obj)
+            row["rows"] = arr0.shape[0] if arr0.ndim >= 1 else 1
+            row["columns"] = arr0.shape[1] if arr0.ndim >= 2 else 1
+ 
+        try:
+            arr = numeric_array(obj)
+            row["finite_values"] = int(np.isfinite(arr).sum())
+            row["nan_values"] = int(np.isnan(arr).sum())
+            row["positive_infinity_values"] = int(np.isposinf(arr).sum())
+            row["negative_infinity_values"] = int(np.isneginf(arr).sum())
+            arr2 = arr.reshape(-1, 1) if arr.ndim == 1 else arr
+            row["all_nan_rows"] = int(np.isnan(arr2).all(axis=1).sum())
+        except Exception as exc:
+            row["note"] = (note + " | Numeric audit failed: " + repr(exc)).strip(" |")
+ 
+    audit_rows.append(row)
+ 
+ 
+def record_error(stage_number, stage_name, exc, code_expression):
+    """Preserve an implementation failure instead of silently fixing it."""
+    error_rows.append({
+        "stage_number": stage_number,
+        "stage_name": stage_name,
+        "exception_type": type(exc).__name__,
+        "exception_message": str(exc),
+        "code_expression": code_expression,
+        "traceback": traceback.format_exc(),
+    })
+    record_stage(
+        stage_number,
+        stage_name,
+        obj=None,
+        status="error",
+        note=f"{type(exc).__name__}: {exc}",
+    )
+ 
+ 
+def save_table(df, filename):
+    df.to_csv(OUTPUT_DIR / filename, index=False, encoding="utf-8-sig")
+ 
+ 
+def summarize_feature_state(feature_df, state_name):
+    rows = []
+    for column in feature_df.columns:
+        values = pd.to_numeric(feature_df[column], errors="coerce")
+        finite = values[np.isfinite(values)]
+        rows.append({
+            "feature_state": state_name,
+            "feature": column,
+            "n_total": len(values),
+            "n_finite": int(np.isfinite(values).sum()),
+            "n_nan": int(values.isna().sum()),
+            "n_positive_inf": int(np.isposinf(values).sum()),
+            "n_negative_inf": int(np.isneginf(values).sum()),
+            "mean": float(finite.mean()) if len(finite) else np.nan,
+            "sd": float(finite.std(ddof=1)) if len(finite) > 1 else np.nan,
+            "median": float(finite.median()) if len(finite) else np.nan,
+            "minimum": float(finite.min()) if len(finite) else np.nan,
+            "maximum": float(finite.max()) if len(finite) else np.nan,
+            "unique_values_including_nan": int(values.nunique(dropna=False)),
+        })
+    return rows
+ 
+ 
+def make_first_rise_position(a_frame):
+    """Smallest executable interpretation of the first legacy statement."""
+    def one_row(row):
+        positive = (row > 0).to_numpy(dtype=bool)
+        return int(np.argmax(positive)) if np.any(positive) else -1
+    return a_frame.apply(one_row, axis=1)
+ 
+ 
+def make_first_rise_pom(a_frame, months):
+    """Later definition in the supplied initial code: actual POM label."""
+    def one_row(row):
+        positive = (row > 0).to_numpy(dtype=bool)
+        return int(months[np.argmax(positive)]) if np.any(positive) else -1
+    return a_frame.apply(one_row, axis=1)
+ 
+ 
+def compute_t_star_exact(row, months):
+    """Replay the supplied compute_inflection function exactly."""
+    first_derivative = row.values
+    second_derivative = np.gradient(first_derivative)
+    if np.all(np.isnan(second_derivative)):
+        return -1
+    peak_idx = np.nanargmax(np.abs(second_derivative))
+    return months[peak_idx]
+ 
+ 
+def compute_psa_peak_month_exact(row, months):
+    """Replay the supplied psa_peak_month expression exactly."""
+    return months[np.nanargmax(row.values)] if row.notna().any() else -1
+ 
+ 
+def fit_one_state(feature_df, state_name, kmeans_mode):
+    """Fit K=2..6 without scaling, as in the initial code."""
+    imputer = SimpleImputer(strategy="median")
+    X = imputer.fit_transform(feature_df)
+ 
+    if X.shape[1] != feature_df.shape[1]:
+        raise RuntimeError(
+            f"SimpleImputer changed feature count for {state_name}: "
+            f"{feature_df.shape[1]} -> {X.shape[1]}"
+        )
+    if not np.isfinite(X).all():
+        raise RuntimeError(f"Non-finite KMeans input for {state_name}")
+ 
+    imputation_table = pd.DataFrame({
+        "feature_state": state_name,
+        "kmeans_mode": kmeans_mode,
+        "feature": feature_df.columns,
+        "median_used_by_imputer": imputer.statistics_,
+        "missing_before_imputation": feature_df.isna().sum().to_numpy(),
+    })
+ 
+    metric_rows = []
+    labels_by_k = {}
+ 
+    for k in range(2, 7):
+        if kmeans_mode == "literal_installed_default":
+            # Exact constructor written in the original code.
+            model = KMeans(n_clusters=k, random_state=RANDOM_STATE)
+        elif kmeans_mode == "historical_default_n_init_10":
+            # Compatibility replay of the older scikit-learn default.
+            model = KMeans(
+                n_clusters=k,
+                random_state=RANDOM_STATE,
+                n_init=10,
+            )
+        else:
+            raise ValueError(kmeans_mode)
+ 
+        labels = model.fit_predict(X)
+        labels_by_k[k] = labels
+        counts = np.bincount(labels, minlength=k)
+ 
+        row = {
+            "feature_state": state_name,
+            "feature_columns": "|".join(feature_df.columns),
+            "n_features": feature_df.shape[1],
+            "analysis_n": len(X),
+            "standardization": "none",
+            "imputation": "median",
+            "kmeans_mode": kmeans_mode,
+            "installed_kmeans_n_init_parameter": str(model.get_params()["n_init"]),
+            "k": k,
+            "silhouette": float(silhouette_score(X, labels)),
+            "cluster_sizes_raw": "|".join(map(str, counts)),
+            "cluster_sizes_sorted": "|".join(map(str, np.sort(counts))),
+            "reference_cluster_sizes_sorted": "78|372|984" if k == 3 else "",
+            "absolute_count_difference_from_reference": (
+                int(np.abs(np.sort(counts) - REFERENCE_CLUSTER_COUNTS_SORTED).sum())
+                if k == 3 else np.nan
+            ),
+            "reference_silhouette": (
+                REFERENCE_SILHOUETTE_K2 if k == 2
+                else REFERENCE_SILHOUETTE_K3 if k == 3
+                else np.nan
+            ),
+            "silhouette_difference_from_reference": (
+                float(silhouette_score(X, labels) - REFERENCE_SILHOUETTE_K2)
+                if k == 2
+                else float(silhouette_score(X, labels) - REFERENCE_SILHOUETTE_K3)
+                if k == 3
+                else np.nan
+            ),
+        }
+        metric_rows.append(row)
+ 
+    return X, labels_by_k, imputation_table, metric_rows
+ 
+ 
+def save_assignments_and_trajectory(
+    patient_ids,
+    feature_df,
+    labels,
+    state_name,
+    kmeans_mode,
+    psa_frame,
+    psa_columns,
+    pom_months,
+):
+    safe_name = re.sub(r"[^A-Za-z0-9_]+", "_", f"{state_name}_{kmeans_mode}")
+ 
+    assignments = pd.concat(
+        [
+            pd.Series(patient_ids, name=PATIENT_ID_COL).reset_index(drop=True),
+            feature_df.reset_index(drop=True),
+        ],
+        axis=1,
+    )
+    assignments["cluster_raw"] = labels
+    save_table(assignments, f"assignments_{safe_name}.csv")
+ 
+    trajectory_rows = []
+    for cluster_raw in sorted(np.unique(labels)):
+        group = psa_frame.loc[labels == cluster_raw]
+        for column, pom in zip(psa_columns, pom_months):
+            values = pd.to_numeric(group[column], errors="coerce").dropna()
+            trajectory_rows.append({
+                "feature_state": state_name,
+                "kmeans_mode": kmeans_mode,
+                "cluster_raw": int(cluster_raw),
+                "pom": int(pom),
+                "n_observed": int(len(values)),
+                "mean_psa": float(values.mean()) if len(values) else np.nan,
+                "median_psa": float(values.median()) if len(values) else np.nan,
+            })
+ 
+    trajectory = pd.DataFrame(trajectory_rows)
+    save_table(trajectory, f"trajectory_{safe_name}.csv")
+ 
+    early = trajectory[trajectory["pom"] <= 18]
+    plt.figure(figsize=(8, 5))
+    counts = pd.Series(labels).value_counts().sort_index()
+    for cluster_raw in sorted(early["cluster_raw"].unique()):
+        plot_data = early[early["cluster_raw"] == cluster_raw]
+        plt.plot(
+            plot_data["pom"],
+            plot_data["mean_psa"],
+            marker="o",
+            linewidth=2,
+            label=f"Raw cluster {cluster_raw} (n={int(counts[cluster_raw])})",
+        )
+    plt.xlabel("Months After Surgery")
+    plt.ylabel("Mean PSA (ng/mL)")
+    plt.title(f"Audit: {state_name} / {kmeans_mode}")
+    if (early["mean_psa"].dropna() > 0).all():
+        plt.yscale("log")
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(
+        OUTPUT_DIR / f"trajectory_{safe_name}.png",
+        dpi=300,
+        bbox_inches="tight",
+    )
+    plt.show()
+    plt.close()
+Code cell 6
+# ============================================================
+# 4. ENVIRONMENT AUDIT
+# ============================================================
+ 
+environment = {
+    "python": platform.python_version(),
+    "numpy": np.__version__,
+    "pandas": pd.__version__,
+    "scipy": scipy.__version__,
+    "scikit_learn": sklearn.__version__,
+    "installed_KMeans_default_n_init": str(
+        KMeans(n_clusters=3, random_state=RANDOM_STATE).get_params()["n_init"]
+    ),
+    "expected_source_basename": EXPECTED_SOURCE_BASENAME,
+    "actual_uploaded_filename": INPUT_CSV.name,
+    "input_sha256": INPUT_SHA256,
+    "input_csv": str(INPUT_CSV),
+    "output_directory": str(OUTPUT_DIR),
+}
+ 
+with open(OUTPUT_DIR / "00_environment.json", "w", encoding="utf-8") as file:
+    json.dump(environment, file, ensure_ascii=False, indent=2)
+Code cell 7
+# ============================================================
+# 5. LOAD DATA EXACTLY AS IN THE INITIAL CODE
+# ============================================================
+ 
+if not INPUT_CSV.exists():
+    raise FileNotFoundError(f"Input CSV was not found:\n{INPUT_CSV}")
+ 
+df = pd.read_csv(INPUT_CSV)
+record_stage(1, "df = pd.read_csv(filename)", df)
+ 
+SOURCE_HAS_PATIENT_ID = "Patient_ID" in df.columns
+ 
+if SOURCE_HAS_PATIENT_ID:
+    PATIENT_ID_COL = "Patient_ID"
+    AUDIT_ID_PROVENANCE = "existing Patient_ID column"
+else:
+    # This column is for output traceability only. The original analytical
+    # matrix, PSA-column selection, features, and KMeans input do not use it.
+    PATIENT_ID_COL = "Audit_Row_ID"
+    df[PATIENT_ID_COL] = np.arange(1, len(df) + 1, dtype=int)
+    AUDIT_ID_PROVENANCE = "generated sequential row number; not an analysis feature"
+ 
+record_stage(
+    1.1,
+    "audit row identifier check",
+    df[[PATIENT_ID_COL]],
+    note=AUDIT_ID_PROVENANCE,
+)
+ 
+input_audit = pd.DataFrame({
+    "row_number_in_dataframe": np.arange(len(df)),
+    PATIENT_ID_COL: df[PATIENT_ID_COL],
+})
+save_table(input_audit, "01_input_patient_order.csv")
+Code cell 8
+# ============================================================
+# 6. PSA COLUMN SELECTION — LITERAL ORIGINAL STATEMENT
+# ============================================================
+ 
+# Deliberately not sorted and not capped at POM120: the original list
+# comprehension retained DataFrame column order.
+psa_cols = [
+    col for col in df.columns
+    if col.startswith("PSA POM") and col != "PSA POM0"
+]
+ 
+if not psa_cols:
+    raise RuntimeError("No columns matched the literal initial-code PSA rule.")
+ 
+psa_column_audit = pd.DataFrame({
+    "position_in_selected_psa_columns": np.arange(len(psa_cols)),
+    "column_name": psa_cols,
+    "position_in_source_csv": [df.columns.get_loc(column) for column in psa_cols],
+})
+ 
+def parse_pom_literal(column):
+    return int(column.split("POM")[1])
+ 
+try:
+    pom_months = [parse_pom_literal(column) for column in psa_cols]
+    psa_column_audit["parsed_pom"] = pom_months
+    record_stage(
+        2,
+        "literal PSA column selection and POM parsing",
+        df[psa_cols],
+        note="PSA columns retained in source CSV order; no sorting performed.",
+    )
+except Exception as exc:
+    record_error(
+        2,
+        "pom_months = [int(col.split('POM')[1]) for col in psa_cols]",
+        exc,
+        "[int(col.split('POM')[1]) for col in psa_cols]",
+    )
+    raise
+ 
+save_table(psa_column_audit, "02_psa_column_order_audit.csv")
+Code cell 9
+# ============================================================
+# 7. NUMERIC CONVERSION — LITERAL ORIGINAL STATEMENT
+# ============================================================
+ 
+psa_data = df[psa_cols].copy()
+record_stage(3, "psa_data = df[psa_cols].copy()", psa_data)
+ 
+psa_data = psa_data.apply(pd.to_numeric, errors="coerce")
+record_stage(4, "psa_data.apply(pd.to_numeric, errors='coerce')", psa_data)
+ 
+conversion_audit = pd.DataFrame({
+    "column": psa_cols,
+    "nonmissing_after_numeric_conversion": psa_data.notna().sum().to_numpy(),
+    "zero_values": (psa_data == 0).sum().to_numpy(),
+    "negative_values": (psa_data < 0).sum().to_numpy(),
+    "positive_values": (psa_data > 0).sum().to_numpy(),
+})
+save_table(conversion_audit, "03_psa_numeric_conversion_audit.csv")
+Code cell 10
+# ============================================================
+# 8. NATURAL LOG — LITERAL ORIGINAL STATEMENT
+# ============================================================
+ 
+with np.errstate(divide="ignore", invalid="ignore"):
+    psa_log = np.log(psa_data.replace(0, np.nan))
+ 
+record_stage(
+    5,
+    "psa_log = np.log(psa_data.replace(0, np.nan))",
+    psa_log,
+    note="Only zero was explicitly replaced. Negative values were not prefiltered.",
+)
+Code cell 11
+# ============================================================
+# 9. DIFFERENCE — LITERAL ORIGINAL STATEMENT
+# ============================================================
+ 
+a_diff = psa_log.diff(axis=1) / 1.0
+record_stage(
+    6,
+    "a_t = psa_log.diff(axis=1) / 1.0",
+    a_diff,
+    note="First PSA column is retained and is NaN after diff().",
+)
+Code cell 12
+# ============================================================
+# 10. GAUSSIAN FILTER — LITERAL ORIGINAL STATEMENT
+# ============================================================
+ 
+# No interpolation and no NaN-aware correction are introduced here.
+a_t = a_diff.apply(
+    lambda row: gaussian_filter1d(
+        row,
+        sigma=GAUSSIAN_SIGMA,
+        mode=GAUSSIAN_MODE,
+    ),
+    axis=1,
+    result_type="broadcast",
+)
+ 
+record_stage(
+    7,
+    "gaussian_filter1d(row, sigma=1, mode='nearest')",
+    a_t,
+    note="Literal NaN propagation is preserved.",
+)
+ 
+nan_propagation = pd.DataFrame({
+    PATIENT_ID_COL: df[PATIENT_ID_COL].to_numpy(),
+    "finite_values_before_gaussian": np.isfinite(a_diff.to_numpy(dtype=float)).sum(axis=1),
+    "finite_values_after_gaussian": np.isfinite(a_t.to_numpy(dtype=float)).sum(axis=1),
+    "nan_values_before_gaussian": np.isnan(a_diff.to_numpy(dtype=float)).sum(axis=1),
+    "nan_values_after_gaussian": np.isnan(a_t.to_numpy(dtype=float)).sum(axis=1),
+})
+nan_propagation["finite_values_lost_after_gaussian"] = (
+    nan_propagation["finite_values_before_gaussian"]
+    - nan_propagation["finite_values_after_gaussian"]
+)
+save_table(nan_propagation, "04_gaussian_nan_propagation_by_patient.csv")
+Code cell 13
+# ============================================================
+# 11. COMMON max_a AND mean_a
+# ============================================================
+ 
+base_features = pd.DataFrame(index=df.index)
+base_features["max_a"] = a_t.max(axis=1, skipna=True)
+base_features["mean_a"] = a_t.mean(axis=1, skipna=True)
+record_stage(8, "features['max_a']; features['mean_a']", base_features)
+Code cell 14
+# ============================================================
+# 12. FIRST first_rise_month LINE — EXECUTE LITERALLY
+# ============================================================
+ 
+literal_first_rise_succeeded = False
+ 
+try:
+    first_rise_literal = a_t.apply(
+        lambda row: int(row.index[np.argmax(row > 0)])
+        if np.any(row > 0)
+        else -1,
+        axis=1,
+    )
+    literal_first_rise_succeeded = True
+    record_stage(
+        9,
+        "literal first_rise_month using int(row.index[argmax])",
+        first_rise_literal,
+    )
+    save_table(
+        pd.DataFrame({
+            PATIENT_ID_COL: df[PATIENT_ID_COL],
+            "first_rise_literal": first_rise_literal,
+        }),
+        "05_first_rise_literal_result.csv",
+    )
+except Exception as exc:
+    record_error(
+        9,
+        "literal first_rise_month using int(row.index[argmax])",
+        exc,
+        "int(row.index[np.argmax(row > 0)]) if np.any(row > 0) else -1",
+    )
+Code cell 15
+# ============================================================
+# 13. MINIMAL EXECUTION PATCH: COLUMN POSITION
+# ============================================================
+ 
+features_3_position = base_features.copy()
+features_3_position["first_rise_month"] = make_first_rise_position(a_t)
+record_stage(
+    10,
+    "minimal executable interpretation: first positive column position",
+    features_3_position,
+    note="This is explicitly labeled as a minimal patch, not the literal line.",
+)
+save_table(
+    pd.concat(
+        [df[[PATIENT_ID_COL]].reset_index(drop=True), features_3_position.reset_index(drop=True)],
+        axis=1,
+    ),
+    "06_features_3_column_position.csv",
+)
+Code cell 16
+# ============================================================
+# 14. LATER OVERWRITE: ACTUAL POM
+# ============================================================
+ 
+features_3_pom = base_features.copy()
+features_3_pom["first_rise_month"] = make_first_rise_pom(a_t, pom_months)
+record_stage(
+    11,
+    "later overwrite: first_rise_month = pom_months[argmax]",
+    features_3_pom,
+)
+save_table(
+    pd.concat(
+        [df[[PATIENT_ID_COL]].reset_index(drop=True), features_3_pom.reset_index(drop=True)],
+        axis=1,
+    ),
+    "07_features_3_actual_pom.csv",
+)
+Code cell 17
+# ============================================================
+# 15. FIVE-FEATURE STATE AFTER t_star AND psa_peak_month
+# ============================================================
+ 
+features_5_pom = features_3_pom.copy()
+features_5_pom["t_star"] = a_t.apply(
+    lambda row: compute_t_star_exact(row, pom_months),
+    axis=1,
+)
+features_5_pom["psa_peak_month"] = psa_data.apply(
+    lambda row: compute_psa_peak_month_exact(row, pom_months),
+    axis=1,
+)
+ 
+record_stage(
+    12,
+    "features after adding t_star and psa_peak_month",
+    features_5_pom,
+    note="This is the feature object passed to the later silhouette block.",
+)
+save_table(
+    pd.concat(
+        [df[[PATIENT_ID_COL]].reset_index(drop=True), features_5_pom.reset_index(drop=True)],
+        axis=1,
+    ),
+    "08_features_5_after_additions.csv",
+)
+Code cell 18
+# ============================================================
+# 16. FEATURE-STATE AUDIT
+# ============================================================
+ 
+feature_summary_rows = []
+feature_summary_rows.extend(
+    summarize_feature_state(features_3_position, "three_features_column_position")
+)
+feature_summary_rows.extend(
+    summarize_feature_state(features_3_pom, "three_features_actual_pom")
+)
+feature_summary_rows.extend(
+    summarize_feature_state(features_5_pom, "five_features_actual_pom")
+)
+save_table(pd.DataFrame(feature_summary_rows), "09_feature_state_summary.csv")
+ 
+feature_state_transition = pd.DataFrame([
+    {
+        "execution_order": 1,
+        "feature_state": "three_features_column_position",
+        "provenance": "minimal executable interpretation of the first first_rise line",
+        "feature_columns": "max_a|mean_a|first_rise_month",
+        "n_features": 3,
+    },
+    {
+        "execution_order": 2,
+        "feature_state": "three_features_actual_pom",
+        "provenance": "later corrected first_rise block before t_star was added",
+        "feature_columns": "max_a|mean_a|first_rise_month",
+        "n_features": 3,
+    },
+    {
+        "execution_order": 3,
+        "feature_state": "five_features_actual_pom",
+        "provenance": "same feature object after t_star and psa_peak_month additions",
+        "feature_columns": "max_a|mean_a|first_rise_month|t_star|psa_peak_month",
+        "n_features": 5,
+    },
+])
+save_table(feature_state_transition, "10_feature_state_execution_order.csv")
+Code cell 19
+# ============================================================
+# 17. CLUSTER EACH HISTORICALLY EVIDENCED EXECUTABLE STATE
+# ============================================================
+ 
+feature_states = {
+    "three_features_column_position": features_3_position,
+    "three_features_actual_pom": features_3_pom,
+    "five_features_actual_pom": features_5_pom,
+}
+ 
+kmeans_modes = [
+    "literal_installed_default",
+    "historical_default_n_init_10",
+]
+ 
+all_metric_rows = []
+all_imputation_tables = []
+ 
+for state_name, feature_df in feature_states.items():
+    for kmeans_mode in kmeans_modes:
+        X, labels_by_k, imputation_table, metric_rows = fit_one_state(
+            feature_df=feature_df,
+            state_name=state_name,
+            kmeans_mode=kmeans_mode,
+        )
+        all_metric_rows.extend(metric_rows)
+        all_imputation_tables.append(imputation_table)
+ 
+        # Save only K=3 assignments and trajectory audit. Raw KMeans labels are
+        # retained; labels are not reordered to resemble the manuscript.
+        save_assignments_and_trajectory(
+            patient_ids=df[PATIENT_ID_COL].to_numpy(),
+            feature_df=feature_df,
+            labels=labels_by_k[3],
+            state_name=state_name,
+            kmeans_mode=kmeans_mode,
+            psa_frame=psa_data,
+            psa_columns=psa_cols,
+            pom_months=pom_months,
+        )
+ 
+cluster_metrics = pd.DataFrame(all_metric_rows)
+save_table(cluster_metrics, "11_cluster_metrics_all_audited_states.csv")
+save_table(pd.concat(all_imputation_tables, ignore_index=True), "12_imputation_audit.csv")
+Code cell 20
+# ============================================================
+# 18. FINAL LINE-BY-LINE AUDIT TABLES
+# ============================================================
+ 
+save_table(pd.DataFrame(audit_rows), "13_line_by_line_audit.csv")
+ 
+if error_rows:
+    save_table(pd.DataFrame(error_rows), "14_literal_execution_errors.csv")
+else:
+    save_table(
+        pd.DataFrame(columns=[
+            "stage_number",
+            "stage_name",
+            "exception_type",
+            "exception_message",
+            "code_expression",
+            "traceback",
+        ]),
+        "14_literal_execution_errors.csv",
+    )
+Code cell 21
+# ============================================================
+# 19. HUMAN-READABLE SUMMARY — NO AUTOMATIC BEST CONDITION
+# ============================================================
+ 
+summary_lines = [
+    "INITIAL D-MODULE PSA CODE: LINE-BY-LINE IMPLEMENTATION AUDIT",
+    "",
+    f"Expected historical input: {EXPECTED_SOURCE_BASENAME}",
+    f"Actual uploaded filename: {INPUT_CSV.name}",
+    f"Input SHA-256: {INPUT_SHA256}",
+    f"Input rows: {len(df)}",
+    f"Source contained Patient_ID: {SOURCE_HAS_PATIENT_ID}",
+    f"Audit identifier column: {PATIENT_ID_COL}",
+    f"Audit identifier provenance: {AUDIT_ID_PROVENANCE}",
+    f"Unique audit identifiers: {df[PATIENT_ID_COL].nunique(dropna=True)}",
+    f"Selected PSA columns: {len(psa_cols)}",
+    "PSA column order: " + " | ".join(psa_cols),
+    "",
+    "No eligibility filter was applied.",
+    "No interpolation was applied.",
+    "No standardization was applied.",
+    "No actual-POM normalization of a(t) was applied.",
+    "No new feature or clustering method was introduced.",
+    "",
+    "Literal first_rise_month line succeeded: " + str(literal_first_rise_succeeded),
+    "",
+    "Audited executable feature states:",
+    "  1. three_features_column_position (minimal execution patch)",
+    "  2. three_features_actual_pom (later overwritten definition)",
+    "  3. five_features_actual_pom (after t_star and psa_peak_month additions)",
+    "",
+    "KMeans modes:",
+    "  1. literal constructor under the installed scikit-learn default",
+    "  2. n_init=10 compatibility replay of the historical default",
+    "",
+    "Reference values were recorded only; no state was selected or ranked by agreement.",
+    "Reference K=3 counts (sorted): 78|372|984",
+    "Reference K=2 silhouette: 0.654",
+    "Reference K=3 silhouette: 0.641",
+    "",
+    "Primary audit files:",
+    "  02_psa_column_order_audit.csv",
+    "  04_gaussian_nan_propagation_by_patient.csv",
+    "  09_feature_state_summary.csv",
+    "  10_feature_state_execution_order.csv",
+    "  11_cluster_metrics_all_audited_states.csv",
+    "  13_line_by_line_audit.csv",
+    "  14_literal_execution_errors.csv",
+]
+ 
+with open(OUTPUT_DIR / "15_audit_summary.txt", "w", encoding="utf-8") as file:
+    file.write("\n".join(summary_lines))
+ 
+print("\n" + "=" * 100)
+print("AUDIT COMPLETED")
+print("=" * 100)
+for line in summary_lines:
+    print(line)
+ 
+print("\nCluster metrics (descriptive display only):")
+print(
+    cluster_metrics[
+        [
+            "feature_state",
+            "kmeans_mode",
+            "k",
+            "silhouette",
+            "cluster_sizes_sorted",
+            "silhouette_difference_from_reference",
+            "absolute_count_difference_from_reference",
+        ]
+    ].to_string(index=False)
+)
+ 
+print("\nSaved to:")
+print(OUTPUT_DIR)
